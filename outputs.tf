@@ -1,5 +1,24 @@
-#output "myoutput" {
-#  description = "Description of my output"
-#  value       = "value"
-#  depends_on  = [<some resource>]
-#}
+output "ngw_id" {   
+    value = local.ngw_id  
+}
+
+output "allocation_id" {   
+    value = aws_nat_gateway.nat_gw[0].allocation_id
+    description = "The Allocation ID of the Elastic IP address for the gateway."
+}
+
+output "subnet_id" {   
+    value = aws_nat_gateway.nat_gw[0].subnet_id  
+}
+
+output "network_interface_id" {    
+    value = aws_nat_gateway.nat_gw[0].network_interface_id 
+}
+output "private_ip" {    
+    value = aws_nat_gateway.nat_gw[0].private_ip
+    description = "The private IP address of the NAT Gateway."
+}
+output "public_ip" {    
+    value = aws_nat_gateway.nat_gw[0].public_ip 
+    description = "The public IP address of the NAT Gateway."
+}

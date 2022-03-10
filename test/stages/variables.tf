@@ -1,50 +1,156 @@
+variable "region"{
+  type = string
+  default ="ap-south-1" 
+  description = "Please set the region where the resouces to be created "
+}
 
-# Resource Group Variables
+variable "access_key"{
+  type = string
+}
+variable "secret_key"{
+  type = string
+}
+
+variable "cloud_provider" {
+  type = string
+  default = "ibm"
+  
+}
+
+variable "provision"{
+    type = bool
+    description = "Provision to true or false"
+    default = false
+}
+
+variable "name" {
+  type        = string
+  description = "The name of the IGW instance"
+  default     = "" 
+}
+
+
+variable "name_prefix"{
+    type = string
+    description = "Prefix to be added to the names of resources which are being provisioned"
+    default = "swe"
+}
+
 variable "resource_group_name" {
   type        = string
-  description = "Existing resource group where the IKS cluster will be provisioned."
+  description = "The name of the resource group where the VPC is deployed. On AWS this value becomes a tag."
+  default     = "default"
 }
 
-variable "ibmcloud_api_key" {
+variable "_count" {
+  type = number
+  description = "Number of resources to be provisioned"
+  default = 1
+  
+}
+variable "connectivity_type" {
   type        = string
-  description = "The api key for IBM Cloud access"
+  description = "(Optional) Connectivity type for the gateway. Valid values are private and public. Defaults to public."
+  default     = "public"  
+  
 }
 
-variable "region" {
+variable "allocation_id" {
   type        = string
-  description = "Region for VLANs defined in private_vlan_number and public_vlan_number."
+  description = "(Optional) The Allocation ID of the Elastic IP address for the gateway. Required for connectivity_type of public"
+  
+}
+variable "subnet_id" {
+  type        = string
+  description = "(Required) The Subnet ID of the subnet in which to place the gateway."
+  default = ""
 }
 
-variable "namespace" {
+/***/
+variable "instance_tenancy" {
   type        = string
-  description = "Namespace for tools"
+  description = "Instance is shared / dedicated, etc. #[default, dedicated, host]"
+  default     = "default"
 }
 
-variable "cluster_name" {
+variable "internal_cidr" {
   type        = string
-  description = "The name of the cluster"
+  description = "The cidr range of the internal network.Either provide manually or chose from AWS IPAM poolsß"
+  default     = "10.0.0.0/16"
+}
+
+
+variable "vpc_id" {
+  type        = string
+  description = "The id of the existing VPC instance"
   default     = ""
 }
 
-variable "cluster_type" {
-  type        = string
-  description = "The type of cluster that should be created (openshift or kubernetes)"
+variable "private_subnet_cidr" {
+  type        = list(string)
+  description = "(Required) The CIDR block for the private subnet."
+  default     = ["10.0.125.0/24"]
 }
 
-variable "cluster_exists" {
-  type        = string
-  description = "Flag indicating if the cluster already exists (true or false)"
-  default     = "true"
+variable "public_subnet_cidr" {
+  type        = list(string)
+  description = "(Required) The CIDR block for the public subnet."
+  default     = ["10.0.0.0/20"]
 }
 
-variable "name_prefix" {
-  type        = string
-  description = "Prefix name that should be used for the cluster and services. If not provided then resource_group_name will be used"
-  default     = ""
+variable "subnet_count" {
+  type        = number
+  description = "Numbers of subnets to provision"
+  default     = 0
 }
 
-variable "vpc_cluster" {
-  type        = bool
-  description = "Flag indicating that this is a vpc cluster"
-  default     = false
+variable "tags" {
+  type = map(string)
+  default = {
+    project = "swe"
+  }
+  description = "(Optional) A map of tags to assign to the resource. If configured with a provider default_tags configuration block present, tags with matching keys will overwrite those defined at the provider-level."
+}
+
+variable "public_subnet_tags" {
+  description = "Tags for public subnets"
+  type        = map(string)
+  default = {
+    tier = "public"
+  }
+}
+
+variable "private_subnet_tags" {
+  description = "Tags for private subnets"
+  type        = map(string)
+  default = {
+    tier = "private"
+  }
+}
+
+variable "availability_zones" {
+  description = "List of availability zone ids"
+  type        = list(string)
+  default     = [""]
+}
+
+variable "acl_rules_pub_in" {
+  type        = list(map(string))
+  default = []
+}
+
+variable "acl_rules_pub_out" {
+  type        = list(map(string))
+  default = []
+}
+
+variable "acl_rules_pri_in" {
+  description = "Private subnets inbound network ACLs"
+  type        = list(map(string))
+  default = []
+}
+
+variable "acl_rules_pri_out" {
+  type        = list(map(string))
+  default = []
 }

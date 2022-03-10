@@ -2,10 +2,22 @@ name: aws-nat-gateway
 type: terraform
 description: Module to provision nat-gateway on aws
 tags:
-  - tools
-  - devops
+    - infrastructure
+    - networking
+    - aws
 versions:
   - platforms: []
+    providers:
+      - name: aws
+        source: "hashicorp/aws"
     dependencies: []
-    variables: []
+    variables:
+    - name: resource_group_name
+      scope: global
+    - name: name_prefix
+      scope: global
+    - name: provision      
+    - name: connectivity_type
+    - name: allocation_id
+    - name: subnet_id    
 cloudProvider: aws
