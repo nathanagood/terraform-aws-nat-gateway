@@ -9,6 +9,7 @@ variable "access_key"{
 }
 variable "secret_key"{
   type = string
+
 }
 
 variable "cloud_provider" {
@@ -55,18 +56,19 @@ variable "connectivity_type" {
   
 }
 
-variable "allocation_id" {
-  type        = string
-  description = "(Optional) The Allocation ID of the Elastic IP address for the gateway. Required for connectivity_type of public"
+# variable "allocation_id" {
+#   type        = string
+#   description = "(Optional) The Allocation ID of the Elastic IP address for the gateway. Required for connectivity_type of public"
   
-}
-variable "subnet_id" {
-  type        = string
-  description = "(Required) The Subnet ID of the subnet in which to place the gateway."
-  default = ""
-}
+# }
 
-/***/
+# variable "subnet_id" {
+#   type        = string
+#   description = "(Required) The Subnet ID of the subnet in which to place the gateway."
+#   default = ""
+# }
+
+
 variable "instance_tenancy" {
   type        = string
   description = "Instance is shared / dedicated, etc. #[default, dedicated, host]"
@@ -79,53 +81,22 @@ variable "internal_cidr" {
   default     = "10.0.0.0/16"
 }
 
-
-variable "vpc_id" {
-  type        = string
-  description = "The id of the existing VPC instance"
-  default     = ""
-}
-
-variable "private_subnet_cidr" {
+variable "subnet_cidrs" {
   type        = list(string)
-  description = "(Required) The CIDR block for the private subnet."
-  default     = ["10.0.125.0/24"]
+  description = "(Required) The CIDR block for the  subnet."
+  default     = []
 }
 
-variable "public_subnet_cidr" {
-  type        = list(string)
-  description = "(Required) The CIDR block for the public subnet."
-  default     = ["10.0.0.0/20"]
-}
+# variable "vpc_id" {
+#   type        = string
+#   description = "The id of the existing VPC instance"
+#   default     = ""
+# }
 
 variable "subnet_count" {
   type        = number
   description = "Numbers of subnets to provision"
   default     = 0
-}
-
-variable "tags" {
-  type = map(string)
-  default = {
-    project = "swe"
-  }
-  description = "(Optional) A map of tags to assign to the resource. If configured with a provider default_tags configuration block present, tags with matching keys will overwrite those defined at the provider-level."
-}
-
-variable "public_subnet_tags" {
-  description = "Tags for public subnets"
-  type        = map(string)
-  default = {
-    tier = "public"
-  }
-}
-
-variable "private_subnet_tags" {
-  description = "Tags for private subnets"
-  type        = map(string)
-  default = {
-    tier = "private"
-  }
 }
 
 variable "availability_zones" {
@@ -134,23 +105,13 @@ variable "availability_zones" {
   default     = [""]
 }
 
-variable "acl_rules_pub_in" {
+variable "acl_rules" {
   type        = list(map(string))
   default = []
 }
 
-variable "acl_rules_pub_out" {
-  type        = list(map(string))
-  default = []
-}
+variable "gateways_count" {
+  type = number
+  default = 0
 
-variable "acl_rules_pri_in" {
-  description = "Private subnets inbound network ACLs"
-  type        = list(map(string))
-  default = []
-}
-
-variable "acl_rules_pri_out" {
-  type        = list(map(string))
-  default = []
 }

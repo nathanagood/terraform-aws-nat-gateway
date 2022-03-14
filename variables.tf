@@ -9,6 +9,7 @@ variable "name_prefix"{
     description = "Prefix to be added to the names of resources which are being provisioned"
     default = "swe"
 }
+
 # variable "vpc_name" {
 #   type = string
 #   description =  "The name of the VPC instance"
@@ -29,7 +30,8 @@ variable "provision" {
 variable "_count" {
   type = number
   description = "Number of resources to be provisioned"
-  default = 1
+
+  default = 0
   
 }
 variable "connectivity_type" {
@@ -42,18 +44,12 @@ variable "connectivity_type" {
 variable "allocation_id" {
   type        = string
   description = "(Optional) The Allocation ID of the Elastic IP address for the gateway. Required for connectivity_type of public"
-  
-  
-}
-variable "subnet_id" {
-  type        = string
-  
-  description = "(Required) The Subnet ID of the subnet in which to place the gateway."
-  
-  
+
+  default = ""
 }
 
-# variable "tags" {
-#   type        = map(string)
-#   description = "(Optional) A map of tags to assign to the resource. If configured with a provider default_tags configuration block present, tags with matching keys will overwrite those defined at the provider-level."
-# }
+variable "subnet_ids" {
+  type        = list(string)
+  description = "(Required) The Subnet ID of the subnet in which to place the gateway."  
+}
+

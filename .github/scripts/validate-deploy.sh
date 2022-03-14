@@ -6,16 +6,17 @@ echo "SCRIPT_DIR: ${SCRIPT_DIR}"
 BIN_DIR=$(cat .bin_dir)
 cat .bin_dir
 
-
-#export VPC_ID=$(terraform output -json | jq -r '."vpc_id".value')
-#export NGW_ID=$(terraform output -json | jq -r '.ngw_id".value')
-export VPC_ID=$(terraform output -json | ${BIN_DIR}/jq -r ."vpc_id".value)
-export NGW_ID=$(terraform output -json | ${BIN_DIR}/jq -r  ."ngw_id".value)
-export SUBNET_ID=$(terraform output -json | ${BIN_DIR}/jq -r  ."subnet_id".value)
 REGION=$(cat terraform.tfvars | grep -E "^region" | sed "s/region=//g" | sed 's/"//g')
+export VPC_ID=$(terraform output -json | ${BIN_DIR}/jq -r ."vpc_id".value)
+
+export PUB_NGW_SN_ID=$(terraform output -json | ${BIN_DIR}/jq -r  ."pub_ngw_subnet_id".value)
+export PUB_NGW_ID=$(terraform output -json | ${BIN_DIR}/jq -r  ."pub_ngw_id".value[0])
+
+export PRI_NGW_SN_ID=$(terraform output -json | ${BIN_DIR}/jq -r  ."priv_ngw_subnet_id".value)
+export PRI_NGW_ID=$(terraform output -json | ${BIN_DIR}/jq -r  ."priv_ngw_id".value[0])
 
 echo "VPC_ID: ${VPC_ID}"
-echo "NGW_ID: ${NGW_ID}"
+echo "PUB_NGW_ID: ${PUB_NGW_ID}"
 echo "REGION: ${REGION}"
 
 aws configure set region ${REGION}
@@ -34,15 +35,31 @@ else
     exit 1
 fi
 
-# NGW_ID_OUT=$(aws ec2 describe-internet-gateways --filters "Name=attachment.vpc-id,Values=$VPC_ID" --query 'InternetGateways[0].InternetGatewayId' --output=text --no-paginate)
-NGW_ID_OUT=$(aws ec2 describe-nat-gateways --filter "Name=vpc-id,Values=$VPC_ID" --filter "Name=subnet-id,Values=$SUBNET_ID" --query 'NatGateways[0].NatGatewayId' --output=text --no-paginate)
-echo "NGW_ID_OUT: $NGW_ID_OUT"
+NGW_FOUND=true
 
-if [[ ( $NGW_ID_OUT == $NGW_ID) ]]; then
-  echo "Nat Gateway  found: ${NGW_ID_OUT} "
-    exit 0  
+# NGW_ID_OUT=$(aws ec2 describe-internet-gateways --filters "Name=attachment.vpc-id,Values=$VPC_ID" --query 'InternetGateways[0].InternetGatewayId' --output=text --no-paginate)
+PUB_NGW_ID_OUT=$(aws ec2 describe-nat-gateways --filter "Name=vpc-id,Values=$VPC_ID" --filter "Name=subnet-id,Values=$PUB_NGW_SN_ID" --query 'NatGateways[0].NatGatewayId' --output=text --no-paginate)
+echo "PUB_NGW_ID_OUT: $PUB_NGW_ID_OUT"
+
+if [[ ( $PUB_NGW_ID_OUT == $PUB_NGW_ID) ]]; then
+  echo "Pub Nat Gateway  found: ${PUB_NGW_ID_OUT} "
+     
 else
-    echo "Nat Gateway Not Found"
+    echo "Pub Nat Gateway Not Found"
+    NGW_FOUND=false
 fi
 
-exit 1
+PRI_NGW_ID_OUT=$(aws ec2 describe-nat-gateways --filter "Name=vpc-id,Values=$VPC_ID" --filter "Name=subnet-id,Values=$PRI_NGW_SN_ID" --query 'NatGateways[0].NatGatewayId' --output=text --no-paginate)
+echo "PRI_NGW_ID_OUT: $PRI_NGW_ID_OUT"
+
+if [[ ( $PRI_NGW_ID_OUT == $PRI_NGW_ID) ]]; then
+  echo "Private Nat Gateway  found: ${PRI_NGW_ID_OUT} "
+    
+else
+    echo "Pub Nat Gateway Not Found"
+    NGW_FOUND=false
+fi
+
+if [[ ($NGW_FOUND == false)]]; then
+  exit 1
+fi  

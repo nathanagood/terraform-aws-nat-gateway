@@ -1,6 +1,7 @@
 name: aws-nat-gateway
 type: terraform
 description: Module to provision nat-gateway on aws
+cloudProvider: aws
 tags:
     - infrastructure
     - networking
@@ -10,14 +11,23 @@ versions:
     providers:
       - name: aws
         source: "hashicorp/aws"
-    dependencies: []
+    dependencies:
+      - id: aws-vpc
+        refs: 
+          - source: github.com/cloud-native-toolkit/terraform-aws-vpc
+            version: ">= 1.0.0"  
+      - id: aws-vpc-subnets
+        refs: 
+          - source: github.com/cloud-native-toolkit/terraform-aws-vpc-subnets
+            version: ">= 1.0.0"                
     variables:
-    - name: resource_group_name
-      scope: global
-    - name: name_prefix
-      scope: global
-    - name: provision      
+    - name: vpc_name
+      moduleRef:
+        id: aws-vpc
+        output: vpc_name
+    - name: subnet_ids
+      moduleRef:
+        id: aws-vpc-subnets
+        output: subnet_ids
     - name: connectivity_type
-    - name: allocation_id
-    - name: subnet_id    
-cloudProvider: aws
+      important: true

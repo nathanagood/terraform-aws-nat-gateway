@@ -1,13 +1,22 @@
-module "dev_ngw" {
+module "dev_pub_ngw" {
   source = "./module"
 
-    _count = var.cloud_provider == "aws" ? 1 : 0
+    _count = var.cloud_provider == "aws"  ? 1 : 0
     provision = var.provision
     resource_group_name = var.resource_group_name
-    name_prefix = var.name_prefix
-    connectivity_type = var.connectivity_type
-    allocation_id = var.allocation_id
-    subnet_id = module.dev_vpc_subnet.public_subnet_ids[0]
-    
+    name_prefix = "${var.name_prefix}-pub"
+    connectivity_type = "public"
+    subnet_ids = [module.dev_pub_subnet.subnet_ids[0]]    
+}
+
+module "dev_priv_ngw" {
+  source = "./module"
+
+    _count = var.cloud_provider == "aws"  ? 1 : 0
+    provision = var.provision
+    resource_group_name = var.resource_group_name
+    name_prefix = "${var.name_prefix}-pri"
+    connectivity_type = "private"
+    subnet_ids = [module.dev_pub_subnet.subnet_ids[1]]
     
 }

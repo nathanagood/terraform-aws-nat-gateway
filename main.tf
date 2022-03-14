@@ -3,9 +3,11 @@ locals{
   resource_group_name = var.resource_group_name != "" && var.resource_group_name != null ? var.resource_group_name : "default"
   ngw_name  = var.name != "" ? var.name : "${local.prefix_name}-ngw"
 
-  ngw_id = var.provision ? aws_nat_gateway.nat_gw[0].id : ""
+
+  ngw_id = var.provision ? aws_nat_gateway.nat_gw.*.id : null
   
-  provision_eip = var.connectivity_type == "public" && var.provision ?( ( var.allocation_id == "" || var.allocation_id == null ) ?  true : false ): false
+  provision_eip = var.connectivity_type == "public" && var.provision && var._count > 0 ?  true : false
+
   allocation_id =  local.provision_eip ? aws_eip.nat_gw_eip[0].id : var.allocation_id
   
 }
@@ -23,29 +25,38 @@ resource null_resource print_names {
   provisioner "local-exec" {
     command = "echo 'ngw_name name: ${local.ngw_name}, Provision EIP: ${local.provision_eip}'"
   }
+
+  provisioner "local-exec" {
+    command = "echo 'connectivity_type: ${var.connectivity_type}, Subnet IDs : ${var.subnet_ids[0]}'"
+  }
 }
 
-
-
 resource "aws_nat_gateway" "nat_gw" {
-  
-  count = var.provision && var._count > 0 ?  1 : 0
-  
-  allocation_id = local.allocation_id
+  depends_on = [
+    aws_eip.nat_gw_eip
+  ]
+  count = var.provision && var._count > 0 ?  var._count : 0
+  allocation_id =  var.connectivity_type == "public" && length(aws_eip.nat_gw_eip) > 0 ?  element(aws_eip.nat_gw_eip.*.id, count.index) : null
   connectivity_type = var.connectivity_type
-  subnet_id = var.subnet_id
+  subnet_id = element(var.subnet_ids, count.index)
   tags ={ 
-      Name = "${local.ngw_name}",
+      Name = "${local.ngw_name}-${count.index}",
       ResourceGroup = local.resource_group_name
-    }
-  
+    }  
 }
 
 resource "aws_eip" "nat_gw_eip" {
-  count = local.provision_eip  ? 1 : 0
+  count = local.provision_eip  ? var._count : 0
   vpc = true
- 
+  tags ={ 
+      Name = "${local.prefix_name}-ngw-eip-${count.index}",
+      ResourceGroup = local.resource_group_name
+    }   
+
 }
+
+
+
 
 
 
