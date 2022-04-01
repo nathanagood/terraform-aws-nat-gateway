@@ -6,6 +6,8 @@ locals{
 
   ngw_id = var.provision ? aws_nat_gateway.nat_gw.*.id : null
   
+  ids = var.provision ? aws_nat_gateway.nat_gw.*.id : null
+  
   provision_eip = var.connectivity_type == "public" && var.provision && var._count > 0 ?  true : false
 
   allocation_id =  local.provision_eip ? aws_eip.nat_gw_eip[0].id : var.allocation_id

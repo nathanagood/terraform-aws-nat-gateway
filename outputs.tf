@@ -1,6 +1,10 @@
 output "ngw_id" {   
     value = local.ngw_id  
 }
+output "ids" {  
+    value = local.ids  
+}
+
 
 output "allocation_id" {   
 

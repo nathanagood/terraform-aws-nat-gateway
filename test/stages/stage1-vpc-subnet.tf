@@ -9,6 +9,7 @@ module "dev_pub_subnet" {
   subnet_cidrs              = ["10.0.0.0/20","10.0.125.0/24"]
   availability_zones  =var.availability_zones
   gateways = [module.dev_igw.igw_id]
+  #gateways = module.dev_igw.ids
 
   map_customer_owned_ip_on_launch = false
   map_public_ip_on_launch         = false
