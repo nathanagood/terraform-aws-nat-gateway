@@ -1,8 +1,8 @@
 variable "name" {
   type        = string
-  description = "The name of the IGW instance"
+  description = "The name of the NGW instance"
   default     = "" 
-}
+  }
 
 variable "name_prefix"{
     type = string
@@ -10,11 +10,6 @@ variable "name_prefix"{
     default = "swe"
 }
 
-# variable "vpc_name" {
-#   type = string
-#   description =  "The name of the VPC instance"
-  
-# }
 
 variable "resource_group_name" {
   type        = string
@@ -30,7 +25,6 @@ variable "provision" {
 variable "_count" {
   type = number
   description = "Number of resources to be provisioned"
-
   default = 0
   
 }
@@ -44,7 +38,6 @@ variable "connectivity_type" {
 variable "allocation_id" {
   type        = string
   description = "(Optional) The Allocation ID of the Elastic IP address for the gateway. Required for connectivity_type of public"
-
   default = ""
 }
 

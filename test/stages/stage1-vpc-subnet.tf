@@ -10,7 +10,6 @@ module "dev_pub_subnet" {
   availability_zones  =var.availability_zones
   gateways = [module.dev_igw.igw_id]
   #gateways = module.dev_igw.ids
-
   map_customer_owned_ip_on_launch = false
   map_public_ip_on_launch         = false
   acl_rules = var.acl_rules

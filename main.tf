@@ -1,7 +1,7 @@
 locals{
-  prefix_name  = var.name_prefix != "" && var.name_prefix != null ? var.name_prefix : local.resource_group_name
   resource_group_name = var.resource_group_name != "" && var.resource_group_name != null ? var.resource_group_name : "default"
-  ngw_name  = var.name != "" ? var.name : "${local.prefix_name}-ngw"
+  name_prefix  = var.name_prefix != "" && var.name_prefix != null ? var.name_prefix : local.resource_group_name
+  ngw_name  = (var.name != "" && var.name != null) ? var.name : "${local.name_prefix}-ngw"
 
 
   ngw_id = var.provision ? aws_nat_gateway.nat_gw.*.id : null
@@ -51,7 +51,7 @@ resource "aws_eip" "nat_gw_eip" {
   count = local.provision_eip  ? var._count : 0
   vpc = true
   tags ={ 
-      Name = "${local.prefix_name}-ngw-eip-${count.index}",
+      Name = "${local.name_prefix}-ngw-eip-${count.index}",
       ResourceGroup = local.resource_group_name
     }   
 
