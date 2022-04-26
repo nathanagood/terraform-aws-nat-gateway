@@ -1,8 +1,9 @@
 variable "name" {
   type        = string
   description = "The name of the NGW instance"
-  default     = "" 
-  }
+  default     = ""
+}
+
 
 variable "name_prefix"{
     type = string
@@ -26,13 +27,12 @@ variable "_count" {
   type = number
   description = "Number of resources to be provisioned"
   default = 0
-  
-}
+  }
+
 variable "connectivity_type" {
   type        = string
   description = "(Optional) Connectivity type for the gateway. Valid values are private and public. Defaults to public."
-  default     = "public"  
-  
+  default     = "public"
 }
 
 variable "allocation_id" {
